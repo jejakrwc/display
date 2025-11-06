@@ -190,31 +190,42 @@ function getConsoleClass(n){
 }
 
 // =============================================================
-// 5️⃣ 🔁 AUTO UPDATE DATA BOOKING GITHUB
+// 5️⃣ 🔁 AUTO UPDATE DATA BOOKING GITHUB (FILE DI SAMA FOLDER)
 // =============================================================
-let lastDataText="";
-async function autoUpdateData() {
-  try{
-    const res=await fetch(`../shared/data-booking.js?time=${Date.now()}`);
-    const newText=await res.text();
-    if(lastDataText && lastDataText!==newText){
-      console.log("🔄 Data booking berubah — update tabel otomatis");
-      const oldScript=document.getElementById("dataBookingScript");
-      if(oldScript) oldScript.remove();
+let lastDataText = "";
 
-      const newScript=document.createElement("script");
-      newScript.id="dataBookingScript";
-      newScript.src=`../shared/data-booking.js?reload=${Date.now()}`;
+async function autoUpdateData() {
+  try {
+    // Ambil file di folder yang sama
+    const res = await fetch(`data-booking.js?time=${Date.now()}`);
+    const newText = await res.text();
+
+    // Jika ada perubahan data
+    if (lastDataText && lastDataText !== newText) {
+      console.log("🔄 Data booking berubah — update tabel otomatis");
+
+      // Hapus script lama
+      const oldScript = document.getElementById("dataBookingScript");
+      if (oldScript) oldScript.remove();
+
+      // Tambahkan script baru
+      const newScript = document.createElement("script");
+      newScript.id = "dataBookingScript";
+      newScript.src = `data-booking.js?reload=${Date.now()}`;
       document.body.appendChild(newScript);
 
-      setTimeout(()=>renderTable(true),1000);
+      // Tunggu sebentar lalu render tabel
+      setTimeout(() => renderTable(true), 1000);
     }
-    lastDataText=newText;
-  }catch(err){
-    console.warn("⚠️ Gagal memuat data-booking.js:",err);
+
+    lastDataText = newText;
+  } catch (err) {
+    console.warn("⚠️ Gagal memuat data-booking.js:", err);
   }
 }
-setInterval(autoUpdateData,10000);
+
+// Jalankan auto-update tiap 10 detik
+setInterval(autoUpdateData, 10000);
 
 // =============================================================
 // 6️⃣ 🔔 POPUP RUANG KOSONG
@@ -435,3 +446,4 @@ checkPrayerManual();
 renderTable();
 updateCountdowns();
 queueAvailableRoomPopups();
+
