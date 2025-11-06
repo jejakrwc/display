@@ -190,13 +190,13 @@ function getConsoleClass(n){
 }
 
 // =============================================================
-// 5️⃣ 🔁 AUTO UPDATE DATA BOOKING GITHUB (FILE DI SAMA FOLDER)
+// 5️⃣ 🔁 AUTO UPDATE DATA BOOKING GITHUB (FILE DI SAMA FOLDER) — FIX
 // =============================================================
 let lastDataText = "";
 
 async function autoUpdateData() {
   try {
-    // Ambil file di folder yang sama
+    // Ambil file data-booking.js dari folder yang sama, hindari cache
     const res = await fetch(`data-booking.js?time=${Date.now()}`);
     const newText = await res.text();
 
@@ -204,18 +204,11 @@ async function autoUpdateData() {
     if (lastDataText && lastDataText !== newText) {
       console.log("🔄 Data booking berubah — update tabel otomatis");
 
-      // Hapus script lama
-      const oldScript = document.getElementById("dataBookingScript");
-      if (oldScript) oldScript.remove();
+      // Jalankan script baru langsung, window.bookedData akan diassign
+      eval(newText);
 
-      // Tambahkan script baru
-      const newScript = document.createElement("script");
-      newScript.id = "dataBookingScript";
-      newScript.src = `data-booking.js?reload=${Date.now()}`;
-      document.body.appendChild(newScript);
-
-      // Tunggu sebentar lalu render tabel
-      setTimeout(() => renderTable(true), 1000);
+      // Render tabel dengan data baru
+      renderTable(true);
     }
 
     lastDataText = newText;
@@ -226,6 +219,7 @@ async function autoUpdateData() {
 
 // Jalankan auto-update tiap 10 detik
 setInterval(autoUpdateData, 10000);
+
 
 // =============================================================
 // 6️⃣ 🔔 POPUP RUANG KOSONG
@@ -446,4 +440,5 @@ checkPrayerManual();
 renderTable();
 updateCountdowns();
 queueAvailableRoomPopups();
+
 
